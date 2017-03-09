@@ -131,7 +131,6 @@ class Level():
         collision_list = pygame.sprite.spritecollide(thing, self.platform_list, False)
         wall_parameters = ()
 
-        global score
         collision_list = pygame.sprite.spritecollide(thing, self.platform_list, False)
 
         for collision in collision_list:
@@ -142,12 +141,18 @@ class Level():
         collision_list = pygame.sprite.spritecollide(thing, self.collectible_list, True)
         for collision in collision_list:
             collision.collision_detected()
-            score += 1
+            GAME_STATE.score += 1
 
         if wall_parameters:
             return wall_parameters
         else:
             return None
+
+class GameState():
+    score = 0
+    current_level_index = 0
+    end_level = 0
+    finished = False
 
 
 
@@ -162,6 +167,8 @@ def draw_score(screen, score, ssize):
     score_rect = score_surf.get_rect()
     score_rect.topleft = (ssize[0]- 220, 50)
     screen.blit(score_surf, score_rect)
+
+GAME_STATE = GameState()
 
 def main():
     '''
@@ -183,8 +190,7 @@ def main():
     octy = Octopus(size)
 
     level_list = [Level(octy, spec) for spec in LEVELS_SPEC]
-    curent_level_no = 0
-    current_level = level_list[curent_level_no]
+    current_level = level_list[GAME_STATE.current_level_index]
 
     clock = pygame.time.Clock()
     iters = 0
@@ -281,7 +287,7 @@ def main():
 
         # draw the octopus and other objects
         current_level.draw(screen)
-        draw_score(screen, score, size)
+        draw_score(screen, GAME_STATE.score, size)
         octy.draw(screen)
 
         clock.tick(60)
